@@ -24,32 +24,58 @@ ncnnModelBase::ncnnModelBase(QString modelName, QObject *parent) : QObject(paren
 #else
         dataDir = "D:\\QtWork\\NCNNProjs\\src";
 #endif
-        QString binFile = dataDir + "/" + modelName + ".bin";
-        QString paramFile = dataDir + "/" + modelName + ".param";
-        if(QFile::exists(binFile))
-        {
-            int res = net.load_param(paramFile.toLatin1().data());
-            qDebug()<<"param consumed: "<<res;
 
-            int consumed = net.load_model(binFile.toLatin1().data());
-            qDebug()<<"bin consumed: "<<consumed;
-
-            qDebug()<<"model loaded: "<<binFile;
-
-            bLoad = true;
-        }
-        else
-        {
-            qDebug()<<"model not loaded.";
-            bLoad = false;
-        }
+        load(dataDir, modelName);
     }
 }
 
 ncnnModelBase::~ncnnModelBase()
 {
+    unload();
+}
+
+
+bool ncnnModelBase::load(QString baseDir, QString modelName)
+{
+    unload();
+
+    qDebug()<<"[NCNN] model load begin";
+
+    QString binFile = baseDir + "//" + modelName + ".bin";
+    QString paramFile = baseDir + "//" + modelName + ".param";
+    if(QFile::exists(binFile) && QFile::exists(binFile))
+    {
+        int res = net.load_param(paramFile.toLatin1().data());
+        qDebug()<<"[NCNN] param consumed: "<<res;
+
+        int consumed = net.load_model(binFile.toLatin1().data());
+        qDebug()<<"[NCNN] bin consumed: "<<consumed;
+
+        qDebug()<<"[NCNN] model loaded: "<<binFile;
+        bLoad = true;
+    }
+    else
+    {
+        qDebug()<<"[NCNN] model not loaded.";
+        bLoad = false;
+    }
+    return bLoad;
+}
+
+bool ncnnModelBase::load(QString modelPath)
+{
+    QFileInfo fileInfo(modelPath);
+    return load(fileInfo.absolutePath(), fileInfo.baseName());
+}
+
+void ncnnModelBase::unload()
+{
+    if(!bLoad) return;
+
+    bLoad = false;
     net.clear();
 }
+
 
 bool ncnnModelBase::moveFiles(QString modelName)
 {

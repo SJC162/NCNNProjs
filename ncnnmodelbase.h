@@ -24,6 +24,9 @@ public:
 
 public:
     virtual bool    predict(cv::Mat & frame) = 0;
+    bool    load(QString baseDir, QString modelName);
+    bool    load(QString modelPath);
+    void    unload();
 
     bool    hasLoadNet(){return bLoad; }
 
