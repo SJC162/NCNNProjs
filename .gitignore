@@ -1,4 +1,4 @@
-# C++ objects and libs
+﻿# C++ objects and libs
 *.slo
 *.lo
 *.o
@@ -43,3 +43,4 @@ target_wrapper.*
 CMakeLists.txt.user*
 
 /src
+.pro
